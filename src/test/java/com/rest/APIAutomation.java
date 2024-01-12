@@ -31,12 +31,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @Epic("Epic-01")
 @Feature("Basic API Automation")
 
-public class TestRest{
+public class APIAutomation{
 	
 	@BeforeClass
 	public void beforeClass() {
 		RequestSpecBuilder requestSpecBuilder = new RequestSpecBuilder().
-				setBaseUri("https://api.publicapis.org").
+				setBaseUri("https://79ddc7c0-e960-43da-ac37-d0ceca0899fa.mock.pstmn.io").
 				//addHeader("X-API-Key", "PMAK-65523acce6e34a00316ff562-b16e73a7ef763ec0caa2b49a184a1565ed").
 				setContentType(ContentType.JSON).
 				log(LogDetail.ALL);
@@ -58,33 +58,13 @@ public class TestRest{
 	public void validate_response() {
 		given().filter(new AllureRestAssured()).
 		when().
-			get("/entries").
+			get("/id=123").
 		then().
 			log().body().
 			assertThat().
-			statusCode(200).body("entries.Category", hasItems("Animals"),
-					"entries.API[0]", is(equalTo("AdoptAPet")));
+			statusCode(200);
 	} 
 			
-
-	@Story("Story-01")
-	@Test
-	@Description("GET API")
-	@Severity(SeverityLevel.NORMAL)
-	public void validate_response_using_hamcrest() {
-		String name1 = given().filter(new AllureRestAssured()).
-				when().
-				get("/entries").
-				then().
-				log().all().
-				assertThat().
-				statusCode(200).
-				extract().
-				response().path("entries.API[2]");
-		
-				assertThat(name1 , equalTo("Cat Facts"));
-	}
-	
 	@Story("Story-01")
 	@Test
 	@Description("GET API")
@@ -93,7 +73,7 @@ public class TestRest{
 		Response resp = given().filter(new AllureRestAssured()).
 		log().headers().
 	when().
-		get("/entries").
+		get("/id=123").
 	then().
 		log().ifValidationFails().
 		assertThat().
@@ -103,6 +83,8 @@ public class TestRest{
 		System.out.println("Response is " +resp.asString());
 	}
 	
+	
+	
 	@Story("Story-01")
 	@Test
 	@Description("GET API")
@@ -110,7 +92,7 @@ public class TestRest{
 	public void extract_single_resp() {
 			Response name = given().filter(new AllureRestAssured()).
 			when().
-			get("/entries").
+			get("/id=123").
 			then().
 			log().all().
 			assertThat().
@@ -119,8 +101,9 @@ public class TestRest{
 			response(); 
 			
 			JsonPath jsonpath = new JsonPath(name.asString());
-			System.out.println("entries" +jsonpath.getString("entries.Description[0]"));		
+			System.out.println("name" +jsonpath.getString("username"));		
 	}
+	
 	
 	@Story("Story-01")
 	@Test
@@ -128,38 +111,35 @@ public class TestRest{
 	@Severity(SeverityLevel.NORMAL)
 	public void validate_post_request() {
 		String payload = "{\r\n"
-				+ "  \"webhook_url\": \"https://api.example.com/webhooks/listener-for-payment-gateway\",\r\n"
-				+ "  \"events\": [\"payment.created\", \"payment.updated\", \"transaction.created\", \"transaction.updated\", \"refund.created\", \"refund.updated\"]\r\n"
+				+ "  \"userId\": 1234,\r\n"
+				+ "  \"username\": \"john_doe1\",\r\n"
+				+ "  \"email\": \"john.doe1@example.com\"\r\n"
 				+ "}";
 		given().filter(new AllureRestAssured()).
-		baseUri("https://fcde83ce-ae2a-4165-bf7f-c2bb5f7fe762.mock.pstmn.io").
 		body(payload).
 		when().
-		post("/webhooks").
+		post("/id").
 		then().assertThat().
 		statusCode(200).
-		body("events", hasItem("payment.created"));
+		body("username", hasItem("Entry successfully added"));
 				
 	}
 	
+	
 	@Story("Story-01")
 	@Test
-	@Description("PUT API")
+	@Description("DELETE API")
 	@Severity(SeverityLevel.NORMAL)
-	public void validate_put_request() {
-	String payload1 = "{\r\n"
-			+ "  \"url\": \"https://api.example.com/webhooks/new-listener-for-payment-gateway\",\r\n"
-			+ "  \"events\": [\"payment.created\", \"refund.created\"]\r\n"
-			+ "}";
+	public void validate_delete_request() {
 	given().filter(new AllureRestAssured()).
-	baseUri("https://fcde83ce-ae2a-4165-bf7f-c2bb5f7fe762.mock.pstmn.io").
-	body(payload1).
 	when().
-	put("/webhooks/W123456").
+	delete("/id=1234").
 	then().
 	assertThat().
-	statusCode(200);		
+	body("username", hasItem("Entry successfully deleted"));
+			
 	}
+	
 }
 	
 
