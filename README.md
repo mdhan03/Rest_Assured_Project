@@ -1,1 +1,2 @@
-# Rest_Assured_Project
+# RestAssured
+RestAssured
